@@ -1,13 +1,18 @@
+// frontend/js/logout.js
 import { signOut } from "./auth.js";
 
-document.getElementById("btnLogout").addEventListener("click", async () => {
-  if (!confirm("Yakin ingin logout?")) return;
+const btn = document.getElementById("btnLogout");
 
-  try {
-    await signOut();
-    alert("Logout berhasil");
-    window.location.href = "login.html";
-  } catch (err) {
-    alert(err.message);
-  }
-});
+if (btn) {
+  btn.addEventListener("click", async () => {
+    if (!confirm("Yakin ingin logout?")) return;
+
+    try {
+      await signOut();
+      alert("Logout berhasil");
+      window.location.href = "login.html";
+    } catch (err) {
+      alert(err.message);
+    }
+  });
+}
