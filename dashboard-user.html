@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard Saya — KursusKu</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body class="bg-gray-100 text-gray-800">
+
+<!-- ================= NAVBAR ================= -->
+<nav class="bg-white border-b shadow-sm">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="index.html" class="text-xl font-bold text-blue-600">
+      KursusKu
+    </a>
+
+    <div class="flex items-center gap-6 text-sm font-semibold">
+      <a href="index.html" class="hover:text-blue-600">Home</a>
+      <a href="courses.html" class="hover:text-blue-600">Kursus</a>
+      <a href="dashboard-user.html"
+         class="text-blue-600 border-b-2 border-blue-600 pb-1">
+        Dashboard
+      </a>
+      <button id="btnLogout"
+        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition">
+        Logout
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ================= HEADER ================= -->
+<header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+  <div class="max-w-7xl mx-auto px-6 py-10">
+    <h1 class="text-3xl font-bold">🎓 Dashboard Saya</h1>
+    <p class="text-sm text-blue-100 mt-2">
+      Pantau kursus yang Anda ikuti dan unduh sertifikat kelulusan.
+    </p>
+  </div>
+</header>
+
+<!-- ================= MAIN ================= -->
+<main class="max-w-7xl mx-auto px-6 py-10 space-y-6">
+
+  <!-- INFO CARD -->
+  <section class="grid md:grid-cols-3 gap-6">
+    <div class="bg-white rounded-xl shadow-sm p-6">
+      <h3 class="text-sm text-gray-500">Status Akun</h3>
+      <p class="text-xl font-bold text-green-600 mt-1">Aktif</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm p-6">
+      <h3 class="text-sm text-gray-500">Total Kursus</h3>
+      <p class="text-xl font-bold mt-1">📚</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm p-6">
+      <h3 class="text-sm text-gray-500">Sertifikat</h3>
+      <p class="text-xl font-bold mt-1">🎓</p>
+    </div>
+  </section>
+
+  <!-- KURSUS SAYA -->
+  <section class="bg-white rounded-xl shadow-sm p-6">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-lg font-bold flex items-center gap-2">
+        📚 Kursus Saya
+      </h2>
+      <span class="text-xs text-gray-500">
+        Sertifikat aktif setelah status <b>LULUS</b>
+      </span>
+    </div>
+
+    <div class="overflow-auto">
+      <table class="w-full text-sm">
+        <thead class="border-b text-gray-500">
+          <tr>
+            <th class="text-left py-3">Kursus</th>
+            <th>Status</th>
+            <th>Sertifikat</th>
+          </tr>
+        </thead>
+
+        <!-- ⚠️ JANGAN GANTI ID -->
+        <tbody id="myCourses"></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer class="text-center text-xs text-gray-500 py-6">
+  © 2026 KursusKu — Platform Pembelajaran Bahasa Indonesia
+</footer>
+
+<!-- SCRIPT -->
+<script type="module" src="./js/dashboard-user.js"></script>
+<script type="module" src="./js/logout.js"></script>
+
+</body>
+</html>

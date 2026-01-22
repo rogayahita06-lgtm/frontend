@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Daftar Kursus — KursusKu</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+
+<!-- ===== NAVBAR ===== -->
+<nav class="bg-white border-b shadow-sm">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <a href="index.html" class="text-xl font-bold text-blue-600">
+      KursusKu
+    </a>
+
+    <div class="flex items-center gap-4 text-sm font-semibold">
+
+      <a href="index.html" class="hover:text-blue-600">Home</a>
+      <a href="courses.html" class="text-blue-600">Kursus</a>
+
+      <!-- CTA -->
+      <a id="navCTA"
+         href="login.html"
+         class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+        Login
+      </a>
+
+      <!-- AUTH AREA -->
+      <div id="authArea" class="hidden relative">
+        <button id="avatarBtn"
+          class="flex items-center gap-2 hover:bg-gray-100 px-3 py-2 rounded-lg">
+          <div
+            class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
+            <span id="avatarInitial">U</span>
+          </div>
+          <span id="navGreeting" class="text-sm font-medium"></span>
+        </button>
+
+        <!-- DROPDOWN -->
+        <div id="avatarMenu"
+          class="hidden absolute right-0 mt-2 w-40 bg-white border rounded-lg shadow-md overflow-hidden z-50">
+          <a id="navDashboard"
+             href="#"
+             class="block px-4 py-2 hover:bg-gray-100">
+            Dashboard
+          </a>
+          <button id="navLogout"
+            class="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600">
+            Logout
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</nav>
+
+<!-- ===== CONTENT ===== -->
+<main class="max-w-7xl mx-auto px-6 py-10">
+  <h1 class="text-2xl font-bold mb-2">Daftar Kursus</h1>
+  <p class="text-gray-600 mb-6">
+    Pilih kursus Bahasa Indonesia yang ingin Anda ikuti.
+  </p>
+
+  <div id="courseList" class="grid md:grid-cols-3 gap-6"></div>
+</main>
+
+
+<!-- ===== SCRIPT ===== -->
+<script type="module">
+  import { api } from "./js/api.js";
+  import { SUPABASE_URL, SUPABASE_ANON_KEY } from "./js/config.js";
+
+  const supabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
+  const ADMIN_EMAILS = ["sitiitarogayah@gmail.com"];
+
+  const navCTA = document.getElementById("navCTA");
+  const authArea = document.getElementById("authArea");
+  const avatarBtn = document.getElementById("avatarBtn");
+  const avatarMenu = document.getElementById("avatarMenu");
+  const navGreeting = document.getElementById("navGreeting");
+  const avatarInitial = document.getElementById("avatarInitial");
+  const navDashboard = document.getElementById("navDashboard");
+  const navLogout = document.getElementById("navLogout");
+  const courseList = document.getElementById("courseList");
+
+  const { data } = await supabase.auth.getSession();
+  const session = data.session;
+
+  // ===============================
+  // NAVBAR STATE
+  // ===============================
+  if (session?.user) {
+    const user = session.user;
+    const name =
+      user.user_metadata?.full_name ||
+      user.email.split("@")[0];
+
+    navGreeting.textContent = `Halo, ${name}`;
+    avatarInitial.textContent = name.charAt(0).toUpperCase();
+    authArea.classList.remove("hidden");
+
+    navCTA.textContent = "Buka Dashboard";
+    navCTA.href = ADMIN_EMAILS.includes(user.email.toLowerCase())
+      ? "dashboard-admin.html"
+      : "dashboard-user.html";
+
+    navDashboard.href = navCTA.href;
+  }
+
+  avatarBtn?.addEventListener("click", () => {
+    avatarMenu.classList.toggle("hidden");
+  });
+
+  navLogout?.addEventListener("click", async () => {
+    await supabase.auth.signOut();
+    window.location.reload();
+  });
+
+  document.addEventListener("click", e => {
+    if (!avatarBtn.contains(e.target)) {
+      avatarMenu.classList.add("hidden");
+    }
+  });
+
+  // ===============================
+  // LOAD COURSES
+  // ===============================
+  const courses = await api.listCourses();
+
+courseList.innerHTML = courses.map(course => {
+  const image =
+    course.image_url && course.image_url.trim() !== ""
+      ? course.image_url
+      : "https://images.unsplash.com/photo-1522202176988-66273c2fd55f";
+
+  return `
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden flex flex-col">
+
+      <!-- IMAGE -->
+      <img
+        src="${image}"
+        alt="${course.title}"
+        class="h-40 w-full object-cover"
+        loading="lazy"
+      />
+
+      <!-- CONTENT -->
+      <div class="p-5 flex flex-col flex-1">
+        <h3 class="font-semibold text-lg">${course.title}</h3>
+
+        <p class="text-sm text-gray-600 mt-2 flex-1">
+          ${course.description}
+        </p>
+
+        <div class="mt-4 flex justify-between items-center">
+          <span class="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded-full">
+            ${course.level}
+          </span>
+          <span class="font-semibold">
+            Rp${Number(course.price).toLocaleString("id-ID")}
+          </span>
+        </div>
+
+        <button
+          data-id="${course.id}"
+          class="btnEnroll mt-4 bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition">
+          Daftar Kursus
+        </button>
+      </div>
+    </div>
+  `;
+}).join("");
+
+
+  // ===============================
+  // ENROLL
+  // ===============================
+  document.querySelectorAll(".btnEnroll").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      if (!session) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      const res = await fetch("http://localhost:3000/api/enroll", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ course_id: btn.dataset.id })
+      });
+
+      const data = await res.json();
+      alert(data.message);
+    });
+  });
+</script>
+
+</body>
+</html>
