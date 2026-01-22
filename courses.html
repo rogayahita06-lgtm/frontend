@@ -195,7 +195,7 @@ courseList.innerHTML = courses.map(course => {
         return;
       }
 
-      const res = await fetch("http://localhost:3000/api/enroll", {
+      const res = await fetch("https://backend-seven-psi-29.vercel.app/api/enroll", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
